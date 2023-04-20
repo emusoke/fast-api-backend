@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13.4-alpine # Rather specify a version than use latest
+    restart: always
+    environment:
+      DATABASE_HOSTENAME: postgres
+      POSTGRES_PASSWORD: magical_password
+    ports:
+      - 5432:5432
+    volumes:
+      - twitter-clone-postgres:/var/lib/postgresql/data
+    networks:
+      - ed_network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  
+  app:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - postgres
+    networks:
+      - ed_network
+
+volumes:
+  twitter-clone-postgres:
+
+networks:
+  ed_network:
+    name: ed_network
